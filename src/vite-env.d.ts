@@ -1,13 +1,11 @@
 /// <reference types="vite/client" />
 
-import { EIP1193Provider } from "ethers";
-
 // Describe metadata related to a provider based on EIP-6963
 interface EIP6963ProviderInfo {
-  walletId: string;
   uuid: string;
   name: string;
   icon: string;
+  rdns: string;
 }
 
 // Structure of provider based on EIP-1193
@@ -31,10 +29,9 @@ interface EIP1193Provider {
 
 // Combines the provider's metadata with an actual provider object
 interface EIP6963ProviderDetail {
-  infor: EIP6963ProviderInfo;
+  info: EIP6963ProviderInfo;
   provider: EIP1193Provider;
 }
-
 // Custom event that wallet sends to the webpage
 type EIP6963AnnounceProviderEvent = {
   detail: {

@@ -18,9 +18,9 @@ export const store = {
       callback();
     }
     window.addEventListener("eip6963:announceProvider", onAnnouncement);
-    window.dispatchEvent(new Event("eip6963:announceProvider"));
+    window.dispatchEvent(new Event("eip6963:requestProvider"));
 
-    // Return a function to unsubscribe from the event
+    // Return a function to unsubscribe from the
     return () =>
       window.removeEventListener("eip6963:announceProvider", onAnnouncement);
   },
