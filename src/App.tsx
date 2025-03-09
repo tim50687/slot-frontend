@@ -5,6 +5,7 @@ import "./App.css";
 import { contractABI } from "./contractABI";
 
 function App() {
+  const ETH_MULTIPLIER = 1_000_000;
   const providers = useSyncProviders();
 
   const [userAccount, setUserAccount] = useState<string>("");
@@ -50,9 +51,12 @@ function App() {
       );
 
       const balanceWei = await contract.getBalance();
+
       const balanceEth = ethers.formatEther(balanceWei);
 
-      setPlayerBalance(balanceEth);
+      const multipliedBalance = parseFloat(balanceEth) * ETH_MULTIPLIER;
+      console.log(multipliedBalance);
+      setPlayerBalance(multipliedBalance.toString());
     } catch (error: any) {
       setError(error.message || "Failed to get balance.");
     }
@@ -84,6 +88,33 @@ function App() {
       setIsLoading(false);
     } catch (error: any) {
       setError(error.message || "Failed to deposit");
+    }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const ethersProvider = new ethers.BrowserProvider(currentProvider);
+      const signer = await ethersProvider.getSigner();
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+
+      const amountEth = parseFloat(playerBalance) / ETH_MULTIPLIER;
+      const amountWei = ethers.parseEther(amountEth.toString());
+
+      const tx = await contract.withdraw(amountWei);
+
+      await tx.wait();
+
+      await getPlayerBalance(currentProvider);
+      setIsLoading(false);
+    } catch (error: any) {
+      setError(error.message || "Failed to withdraw");
     }
   };
 
@@ -120,7 +151,7 @@ function App() {
 
           <div className="player-stats">
             <h3>Player Balance</h3>
-            <p className="balance">{playerBalance} ETH</p>
+            <p className="balance">{playerBalance} COIN</p>
             <button
               onClick={() => getPlayerBalance(currentProvider)}
               disabled={isLoading}
@@ -131,6 +162,7 @@ function App() {
 
           <div className="deposit-form">
             <h3>Deposit Funds</h3>
+            <p>1 ETH = 1,000,000 COIN</p>
             <input
               type="number"
               value={depositAmount}
@@ -141,6 +173,13 @@ function App() {
 
             <button onClick={handleDeposit} disabled={isLoading}>
               {isLoading ? "Processing..." : "Deposit ETH"}
+            </button>
+          </div>
+
+          <div className="withdraw-button">
+            <h3>Withdraw fund</h3>
+            <button onClick={handleWithdraw} disabled={isLoading}>
+              {isLoading ? "Processing..." : "Withdraw all coin"}
             </button>
           </div>
 
