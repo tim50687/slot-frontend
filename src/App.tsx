@@ -16,10 +16,8 @@ function App() {
   // Raw provider from MetaMask
   const [currentProvider, setCurrentProvider] = useState<any>(null);
 
-  // Contract instances
-
   // contract address
-  const contractAddress = "0xE962Fce4C071AE6EEf6d7B771d4a6C4aae63F242";
+  const contractAddress = "0x49bd752c81a998b6ae0a487a40469faada33ca95";
 
   const handleClick = async (providerWithInfo: EIP6963ProviderDetail) => {
     try {
@@ -32,33 +30,10 @@ function App() {
       setUserAccount(account[0]);
       setCurrentProvider(providerWithInfo.provider);
 
-      await getPlayerBalance(providerWithInfo.provider);
+      // await getPlayerBalance(providerWithInfo.provider);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const getPlayerBalance = async (provider: any) => {
-    try {
-      const ethersProvider = new ethers.BrowserProvider(provider);
-      const signer = await ethersProvider.getSigner();
-
-      const contract = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        signer
-      );
-
-      const balanceWei = await contract.getBalance();
-
-      const balanceEth = ethers.formatEther(balanceWei);
-
-      const multipliedBalance = parseFloat(balanceEth) * ETH_MULTIPLIER;
-      console.log(multipliedBalance);
-      setPlayerBalance(multipliedBalance.toString());
-    } catch (error: any) {
-      setError(error.message || "Failed to get balance.");
     }
   };
 
@@ -78,16 +53,24 @@ function App() {
         signer
       );
 
+      // Store current balance
+      const beforeBalance = playerBalance;
+
       const amountWei = ethers.parseEther(depositAmount);
       const tx = await contract.deposit({ value: amountWei });
 
       await tx.wait();
 
-      // Update balance
-      await getPlayerBalance(currentProvider);
+      // Update balance in state (add to current balance)
+      const depositInCoins = parseFloat(depositAmount) * ETH_MULTIPLIER;
+      const newBalance = parseFloat(beforeBalance) + depositInCoins;
+      setPlayerBalance(newBalance.toString());
+
       setIsLoading(false);
+      setDepositAmount("");
     } catch (error: any) {
       setError(error.message || "Failed to deposit");
+      setIsLoading(false);
     }
   };
 
@@ -110,17 +93,30 @@ function App() {
       const tx = await contract.withdraw(amountWei);
 
       await tx.wait();
-
-      await getPlayerBalance(currentProvider);
+      setPlayerBalance("0");
       setIsLoading(false);
     } catch (error: any) {
       setError(error.message || "Failed to withdraw");
+      setIsLoading(false);
     }
   };
 
+  // Whenever play balance change, update the local storage
   useEffect(() => {
-    if (currentProvider && userAccount) {
-      getPlayerBalance(currentProvider);
+    if (userAccount) {
+      localStorage.setItem(`balance-${userAccount}`, playerBalance);
+    }
+  }, [playerBalance]);
+
+  // When user change account, get the balance from local storage
+  useEffect(() => {
+    if (userAccount) {
+      const savedBalance = localStorage.getItem(`balance-${userAccount}`);
+      if (savedBalance) {
+        setPlayerBalance(savedBalance);
+      } else {
+        setPlayerBalance("0");
+      }
     }
   }, [userAccount]);
 
@@ -152,12 +148,6 @@ function App() {
           <div className="player-stats">
             <h3>Player Balance</h3>
             <p className="balance">{playerBalance} COIN</p>
-            <button
-              onClick={() => getPlayerBalance(currentProvider)}
-              disabled={isLoading}
-            >
-              Refresh Balance
-            </button>
           </div>
 
           <div className="deposit-form">
@@ -178,7 +168,10 @@ function App() {
 
           <div className="withdraw-button">
             <h3>Withdraw fund</h3>
-            <button onClick={handleWithdraw} disabled={isLoading}>
+            <button
+              onClick={handleWithdraw}
+              disabled={isLoading || parseFloat(playerBalance) <= 0}
+            >
               {isLoading ? "Processing..." : "Withdraw all coin"}
             </button>
           </div>
