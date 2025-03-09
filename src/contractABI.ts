@@ -4,7 +4,7 @@ export const contractABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
@@ -23,7 +23,7 @@ export const contractABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
+        indexed: true,
         internalType: "address",
         name: "player",
         type: "address",
@@ -47,7 +47,14 @@ export const contractABI = [
   },
   {
     inputs: [],
-    name: "getBalance",
+    name: "getTotalPool",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getTransactionCounter",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -57,6 +64,13 @@ export const contractABI = [
     name: "owner",
     outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ownerWithdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
