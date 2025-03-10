@@ -45,3 +45,12 @@ interface MMError {
   code?: string;
   message?: string;
 }
+
+interface Window {
+  unityInstance?: any;
+  onBalanceUpdated?: (balance: string) => void;
+}
+
+interface UnityGameProps {
+  initialBalance: string;
+}

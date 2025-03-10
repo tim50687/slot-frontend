@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { useSyncProviders } from "./hooks/useSyncProviders";
 import "./App.css";
 import { contractABI } from "./contractABI";
+import { UnityGame } from "./components/UnityGame";
 
 function App() {
   const ETH_MULTIPLIER = 1_000_000;
@@ -13,6 +14,7 @@ function App() {
   const [depositAmount, setDepositAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showGame, setShowGame] = useState(false);
   // Raw provider from MetaMask
   const [currentProvider, setCurrentProvider] = useState<any>(null);
 
@@ -101,13 +103,26 @@ function App() {
     }
   };
 
+  // Function to send Balance to Unity
+  const sendbalanceToGame = (balance: number | string) => {
+    if (window.unityInstance) {
+      window.unityInstance.SendMessage(
+        "GameController",
+        "SetBalance",
+        balance.toString()
+      );
+    } else {
+      console.warn("Unity instance not available");
+    }
+  };
+
   // Whenever play balance change, update the local storage
   useEffect(() => {
     if (userAccount) {
       localStorage.setItem(`balance-${userAccount}`, playerBalance);
     }
   }, [playerBalance]);
-  console.log(playerBalance);
+
   // When user change account, get the balance from local storage
   useEffect(() => {
     if (userAccount) {
@@ -119,6 +134,24 @@ function App() {
       }
     }
   }, [userAccount]);
+
+  // Sync balance with Unity Game
+  useEffect(() => {
+    if (window.unityInstance) {
+      sendbalanceToGame(playerBalance);
+    }
+  }, [window.unityInstance, playerBalance]);
+
+  // Let unity can call this function to update player balance
+  useEffect(() => {
+    window.onBalanceUpdated = (newBalance: string) => {
+      setPlayerBalance(newBalance);
+    };
+
+    return () => {
+      window.onBalanceUpdated = undefined;
+    };
+  }, []);
 
   return (
     <div className="App">
@@ -181,6 +214,12 @@ function App() {
               <p>{error}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {showGame && (
+        <div className="unity-container">
+          <UnityGame initialBalance={playerBalance}></UnityGame>
         </div>
       )}
     </div>
