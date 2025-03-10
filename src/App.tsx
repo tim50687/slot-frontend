@@ -17,7 +17,7 @@ function App() {
   const [currentProvider, setCurrentProvider] = useState<any>(null);
 
   // contract address
-  const contractAddress = "0x18F6Bd73B56e5eAf693AdE3c6a4A64e60CEf9dE4";
+  const contractAddress = "0x1B8764180Ed8709a70807A30315c00aE6032F277";
 
   const handleClick = async (providerWithInfo: EIP6963ProviderDetail) => {
     try {
@@ -107,7 +107,7 @@ function App() {
       localStorage.setItem(`balance-${userAccount}`, playerBalance);
     }
   }, [playerBalance]);
-
+  console.log(playerBalance);
   // When user change account, get the balance from local storage
   useEffect(() => {
     if (userAccount) {
