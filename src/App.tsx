@@ -17,7 +17,7 @@ function App() {
   const [currentProvider, setCurrentProvider] = useState<any>(null);
 
   // contract address
-  const contractAddress = "0x49bd752c81a998b6ae0a487a40469faada33ca95";
+  const contractAddress = "0x18F6Bd73B56e5eAf693AdE3c6a4A64e60CEf9dE4";
 
   const handleClick = async (providerWithInfo: EIP6963ProviderDetail) => {
     try {

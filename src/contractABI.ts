@@ -31,6 +31,25 @@ export const contractABI = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "newBalance",
+        type: "uint256",
+      },
+    ],
+    name: "UpdateBalance",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "player",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "amount",
         type: "uint256",
       },
@@ -43,6 +62,13 @@ export const contractABI = [
     name: "deposit",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "player", type: "address" }],
+    name: "getPlayerBalance",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -78,6 +104,16 @@ export const contractABI = [
     name: "playerBalances",
     outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "player", type: "address" },
+      { internalType: "uint256", name: "newBalance", type: "uint256" },
+    ],
+    name: "updatePlayerBalance",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
