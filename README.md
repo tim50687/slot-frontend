@@ -23,7 +23,7 @@ This project combines modern web technologies with blockchain to create an inter
 
 ## Play Now
 
-You can play the game at: [https://tim50687.github.io/slot-frontend/](https://tim50687.github.io/slot-frontend/)
+You can play the game at: [[https://tim50687.github.io/slot-frontend/](https://tim50687.github.io/slot-frontend/)](https://timslot-c49a3.web.app/)
 
 ## Ethereum Integration
 
