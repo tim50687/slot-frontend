@@ -11,10 +11,12 @@ function App() {
 
   const [userAccount, setUserAccount] = useState<string>("");
   const [playerBalance, setPlayerBalance] = useState<string>("0");
-  const [depositAmount, setDepositAmount] = useState<string>("");
+  const [depositAmount, setDepositAmount] = useState<string>("0");
+  const [fakeDepositAmount, setFakeDepositAmount] = useState<string>("0");
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showGame, setShowGame] = useState(false);
+  // const [showGame, setShowGame] = useState(false);
   // Raw provider from MetaMask
   const [currentProvider, setCurrentProvider] = useState<any>(null);
 
@@ -74,6 +76,11 @@ function App() {
       setError(error.message || "Failed to deposit");
       setIsLoading(false);
     }
+  };
+
+  const handleFakeDeposit = () => {
+    setPlayerBalance(fakeDepositAmount);
+    setFakeDepositAmount("");
   };
 
   const handleWithdraw = async () => {
@@ -137,6 +144,7 @@ function App() {
 
   // Sync balance with Unity Game
   useEffect(() => {
+    console.log("hehheheh");
     if (window.unityInstance) {
       sendbalanceToGame(playerBalance);
     }
@@ -145,6 +153,7 @@ function App() {
   // Let unity can call this function to update player balance
   useEffect(() => {
     window.onBalanceUpdated = (newBalance: string) => {
+      console.log("Balance updated from Unity", newBalance);
       setPlayerBalance(newBalance);
     };
 
@@ -172,7 +181,18 @@ function App() {
           <div>No announced wallet provider</div>
         )}
       </div>
-
+      {/* Manual Deposit */}
+      <div className="fake-deposit-form">
+        <h3>Deposit Form</h3>
+        <input
+          type="number"
+          value={fakeDepositAmount}
+          onChange={(e) => setFakeDepositAmount(e.target.value)}
+          tabIndex={1}
+        />
+        <button onClick={handleFakeDeposit}>Deposit</button>
+      </div>
+      {playerBalance}
       {userAccount && (
         <div>
           <h3>Connected Account</h3>
@@ -217,11 +237,9 @@ function App() {
         </div>
       )}
 
-      {showGame && (
-        <div className="unity-container">
-          <UnityGame initialBalance={playerBalance}></UnityGame>
-        </div>
-      )}
+      <div className="unity-container">
+        <UnityGame />
+      </div>
     </div>
   );
 }

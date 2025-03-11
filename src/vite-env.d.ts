@@ -50,7 +50,3 @@ interface Window {
   unityInstance?: any;
   onBalanceUpdated?: (balance: string) => void;
 }
-
-interface UnityGameProps {
-  initialBalance: string;
-}
