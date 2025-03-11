@@ -8,7 +8,10 @@ export const UnityGame = () => {
     // Load unity webgl
     const loadUnityGame = () => {
       const script = document.createElement("script");
-      script.src = "/Build/slot.loader.js";
+      script.src =
+        process.env.NODE_ENV === "production"
+          ? "/slot-frontend/Build/slot.loader.js"
+          : "/Build/slot.loader.js";
       script.async = true;
 
       script.onload = () => {
@@ -16,9 +19,18 @@ export const UnityGame = () => {
 
         window // @ts-ignore
           .createUnityInstance(canvasRef.current, {
-            dataUrl: "/Build/slot.data.gz",
-            frameworkUrl: "/Build/slot.framework.js.gz",
-            codeUrl: "/Build/slot.wasm.gz",
+            dataUrl:
+              process.env.NODE_ENV === "production"
+                ? "/slot-frontend/Build/slot.data"
+                : "/Build/slot.data",
+            frameworkUrl:
+              process.env.NODE_ENV === "production"
+                ? "/slot-frontend/Build/slot.framework.js"
+                : "/Build/slot.framework.js",
+            codeUrl:
+              process.env.NODE_ENV === "production"
+                ? "/slot-frontend/Build/slot.wasm"
+                : "/Build/slot.wasm",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "My project",
