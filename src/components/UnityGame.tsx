@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const UnityGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameLoaded = useRef<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Load unity webgl
@@ -29,6 +30,7 @@ export const UnityGame = () => {
             window.unityInstance = unityInstance;
             console.log("unity loaded");
             gameLoaded.current = true;
+            setLoading(false);
           })
           .catch((error: any) => {
             console.error("Unity loading error:", error);
@@ -52,6 +54,11 @@ export const UnityGame = () => {
   }, []);
   return (
     <div className="unity-container">
+      {loading && (
+        <div className="unity-loading">
+          <p>🎮 Loading game...</p>
+        </div>
+      )}
       <canvas
         ref={canvasRef}
         id="unity-canvas"
