@@ -13,6 +13,7 @@ function App() {
   const [playerBalance, setPlayerBalance] = useState<string>("0");
   const [depositAmount, setDepositAmount] = useState<string>("0");
   const [fakeDepositAmount, setFakeDepositAmount] = useState<string>("0");
+  const [walletSectionOpen, setWalletSectionOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +33,7 @@ function App() {
       })) as string[];
 
       setUserAccount(account[0]);
+      setWalletSectionOpen(true);
       setCurrentProvider(providerWithInfo.provider);
 
       // await getPlayerBalance(providerWithInfo.provider);
@@ -71,6 +73,7 @@ function App() {
       setPlayerBalance(newBalance.toString());
 
       setIsLoading(false);
+      setWalletSectionOpen(false);
       setDepositAmount("");
     } catch (error: any) {
       setError(error.message || "Failed to deposit");
@@ -183,7 +186,7 @@ function App() {
       </div>
       {/* Manual Deposit */}
       <div className="fake-deposit-form">
-        <h3>Deposit Form</h3>
+        <h3>Play with free money</h3>
         <input
           type="number"
           value={fakeDepositAmount}
@@ -192,8 +195,7 @@ function App() {
         />
         <button onClick={handleFakeDeposit}>Deposit</button>
       </div>
-      {playerBalance}
-      {userAccount && (
+      {userAccount && walletSectionOpen && (
         <div>
           <h3>Connected Account</h3>
           <p>{userAccount}</p>
